@@ -4,6 +4,8 @@ import {Canvas, useFrame} from '@react-three/fiber'
 import {OrbitControls, Stars, Line} from '@react-three/drei'
 import {motion, AnimatePresence} from 'framer-motion'
 import {ArrowUpRight, ChevronDown, Download, Github, Linkedin, Mail, MapPin, Menu, X, ExternalLink, FileText, Layers3, Satellite, Database, Code2, Send, Sparkles, Compass, BriefcaseBusiness, BookOpen, Terminal, MousePointer2} from 'lucide-react'
+
+import InteractiveGeoBackground from "./components/InteractiveGeoBackground";
 import './styles/app.css'
 import {experiences, projects, fieldwork, skills, education} from './data/content'
 
@@ -31,7 +33,25 @@ function Nav({active,setActive,theme,setTheme}){const [mobile,setMobile]=useStat
 function SectionHeading({eyebrow,title,children}){return <div className="section-head"><div><div className="eyebrow">{eyebrow}</div><h2>{title}</h2></div>{children}</div>}
 function ImagePlaceholder({src,label,className=''}){return <div className={'image-placeholder '+className}>{src?<img src={src} alt={label}/>:<><div className="placeholder-grid"/><span><MousePointer2 size={14}/> {label}</span></>}</div>}
 
-function Home(){return <section id="home" className="section hero"><div className="hero-grid"/><div className="hero-copy"><div className="status"><span className="pulse"/> OPEN TO GEOSPATIAL OPPORTUNITIES</div><p className="hero-kicker">GEOSPATIAL • GIS • REMOTE SENSING</p><h1><span>Barnali</span><strong>Bhowmick</strong></h1><p className="hero-lede">MSc Geoinformatics student using GIS, remote sensing and spatial data analysis to understand real-world environmental challenges.</p><div className="hero-cta"><a className="btn primary" href="#projects">Explore my work <ArrowUpRight size={17}/></a><a className="btn ghost" href="/documents/Barnali_Resume.pdf" target="_blank"><Download size={16}/> Resume</a></div><div className="hero-meta"><span><MapPin size={14}/> Pune, Maharashtra</span><span>2025—2027</span><span>GIS × ENVIRONMENT × DATA</span></div></div><div className="hero-visual"><div className="coordinate">18.5204° N<br/>73.8567° E</div><ImagePlaceholder label="ADD /public/images/profile.jpg" className="profile-frame"/><div className="orbit-card"><span>FIELD NOTE</span><strong>Maps → Data → Insight</strong></div></div><div className="scroll-cue">SCROLL TO EXPLORE <ChevronDown size={15}/></div></section>}
+function Home(){return <section id="home" className="section hero"><div className="hero-grid"/><div className="hero-copy"><div className="status"><span className="pulse"/> OPEN TO GEOSPATIAL OPPORTUNITIES</div><p className="hero-kicker">GEOSPATIAL • GIS • REMOTE SENSING</p><h1><span>Barnali</span><strong>Bhowmick</strong></h1><p className="hero-lede">MSc Geoinformatics student using GIS, remote sensing and spatial data analysis to understand real-world environmental challenges.</p><div className="hero-cta"><a className="btn primary" href="#projects">Explore my work <ArrowUpRight size={17}/></a><a className="btn ghost" href="/documents/Barnali_Resume.pdf" target="_blank"><Download size={16}/> Resume</a></div><div className="hero-meta"><span><MapPin size={14}/> Pune, Maharashtra</span><span>2025—2027</span><span>GIS × ENVIRONMENT × DATA</span></div></div><div className="hero-visual"><div className="coordinate">18.5204° N<br/>73.8567° E</div><div className="profile-flip">
+  <div className="profile-flip-inner">
+
+    <div className="profile-flip-front">
+      <img
+        src={`${import.meta.env.BASE_URL}images/profile/profile-front.jpg`}
+        alt="Barnali Bhowmick"
+      />
+    </div>
+
+    <div className="profile-flip-back">
+      <img
+        src={`${import.meta.env.BASE_URL}images/profile/profile-back.jpg`}
+        alt="Barnali Bhowmick"
+      />
+    </div>
+
+  </div>
+</div><div className="orbit-card"><span>FIELD NOTE</span><strong>Maps → Data → Insight</strong></div></div><div className="scroll-cue">SCROLL TO EXPLORE <ChevronDown size={15}/></div></section>}
 
 function About(){return <section id="about" className="section"><SectionHeading eyebrow="01 / THE PERSON BEHIND THE MAP" title="Beyond the map."/><div className="about-layout"><div className="about-story"><p className="lead">I am an MSc Geoinformatics student and BA (Hons) Geography graduate, passionate about using GIS, remote sensing and spatial data analysis to solve real-world environmental challenges.</p><p>My goal is to apply geospatial technologies for climate change research, sustainable planning and data-driven decision-making.</p><div className="identity-grid"><div><span>FOCUS</span><b>GIS + Remote Sensing</b></div><div><span>APPROACH</span><b>Maps → Data → Insight</b></div><div><span>CURRENTLY</span><b>MSc Geoinformatics</b></div><div><span>BASE</span><b>Pune, Maharashtra</b></div></div></div><div className="about-card"><div className="card-top"><span>GEO ID / 2026</span><Compass size={20}/></div><div className="route"><div>GEOGRAPHY</div><i/> <div>GEOINFORMATICS</div><i/> <div>GIS</div><i/> <div>REMOTE SENSING</div><i/> <div>ENVIRONMENTAL APPLICATIONS</div></div><div className="education-list">{education.map(e=><div className="edu" key={e.degree}><div><span>{e.period}</span><h3>{e.degree}</h3><p>{e.institute}</p></div><span className="edu-tag">EDUCATION</span></div>)}</div></div></div></section>}
 
@@ -45,6 +65,58 @@ function Fieldwork(){return <section id="fieldwork" className="section field-sec
 
 function Contact(){const [sent,setSent]=useState(false); const submit=e=>{e.preventDefault();const fd=new FormData(e.currentTarget); const subject=encodeURIComponent('Portfolio enquiry for Barnali Bhowmick'); const body=encodeURIComponent(`Name: ${fd.get('name')}\n\n${fd.get('message')}`); window.location.href=`mailto:barnalibhowmick0@gmail.com?subject=${subject}&body=${body}`; setSent(true)}; return <section id="contact" className="section contact-section"><div className="contact-panel"><div className="contact-copy"><span className="eyebrow">06 / CONTACT</span><h2>Let's map what's next.</h2><p>Have a geospatial problem, research opportunity, internship or collaboration in mind? I would love to hear from you.</p><div className="contact-links"><a href="mailto:barnalibhowmick0@gmail.com"><Mail/> barnalibhowmick0@gmail.com</a><a href="https://github.com/barnalibhowmick0-dot" target="_blank"><Github/> GitHub</a><a href="https://www.linkedin.com/in/b-bhowmick-2005-/" target="_blank"><Linkedin/> LinkedIn</a></div></div><form className="contact-form" onSubmit={submit}><label>YOUR NAME<input name="name" required placeholder="Your name"/></label><label>YOUR MESSAGE<textarea name="message" required rows="5" placeholder="Tell me a little about the opportunity..."/></label><button className="btn primary" type="submit"><Send size={16}/> Send enquiry</button>{sent&&<small>Your email client should open with the message prepared.</small>}</form></div></section>}
 
-function App(){const [theme,setTheme]=useState(localStorage.getItem('barnali-theme')||'dark');const [active,setActive]=useState('Home');useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem('barnali-theme',theme)},[theme]);useEffect(()=>{const fn=e=>{if(e.key.toLowerCase()==='m')document.getElementById('projects')?.scrollIntoView({behavior:'smooth'})};window.addEventListener('keydown',fn);return()=>window.removeEventListener('keydown',fn)},[]);return <div className="app"><Nav active={active} setActive={setActive} theme={theme} setTheme={setTheme}/><main><Home/><About/><Skills/><Experiences/><Projects/><Fieldwork/><Contact/></main><footer><div><b>BARNALI BHOWMICK</b><span>MSc Geoinformatics · GIS · Remote Sensing · Spatial Analysis</span></div><span>BUILT WITH CURIOSITY, DATA & MAPS · 2026</span></footer></div>}
+function App(){
+  const [theme,setTheme]=useState(localStorage.getItem('barnali-theme')||'dark');
+
+  const [active,setActive]=useState('Home');
+
+  useEffect(()=>{
+    document.documentElement.dataset.theme=theme;
+    localStorage.setItem('barnali-theme',theme);
+  },[theme]);
+
+  useEffect(()=>{
+    const fn=e=>{
+      if(e.key.toLowerCase()==='m')
+        document.getElementById('projects')?.scrollIntoView({behavior:'smooth'});
+    };
+
+    window.addEventListener('keydown',fn);
+
+    return()=>window.removeEventListener('keydown',fn);
+  },[]);
+
+  return (
+    <div className="app">
+      <InteractiveGeoBackground/>
+
+      <Nav
+        active={active}
+        setActive={setActive}
+        theme={theme}
+        setTheme={setTheme}
+      />
+
+      <main>
+        <Home/>
+        <About/>
+        <Skills/>
+        <Experiences/>
+        <Projects/>
+        <Fieldwork/>
+        <Contact/>
+      </main>
+
+      <footer>
+        <div>
+          <b>BARNALI BHOWMICK</b>
+          <span>MSc Geoinformatics · GIS · Remote Sensing · Spatial Analysis</span>
+        </div>
+
+        <span>BUILT WITH CURIOSITY, DATA & MAPS · 2026</span>
+      </footer>
+    </div>
+  );
+}
 
 createRoot(document.getElementById('root')).render(<App/>)
