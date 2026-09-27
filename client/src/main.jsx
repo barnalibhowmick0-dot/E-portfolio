@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createRoot} from 'react-dom/client'
 import {Canvas, useFrame} from '@react-three/fiber'
-import {OrbitControls, Stars, Line} from '@react-three/drei'
+import {OrbitControls, Stars, Line, Html} from '@react-three/drei'
 import {motion, AnimatePresence} from 'framer-motion'
 import {ArrowUpRight, ChevronDown, Download, Github, Linkedin, Mail, MapPin, Menu, X, ExternalLink, FileText, Layers3, Satellite, Database, Code2, Send, Sparkles, Compass, BriefcaseBusiness, BookOpen, Terminal, MousePointer2} from 'lucide-react'
 
@@ -12,18 +12,135 @@ import {experiences, projects, fieldwork, skills, education} from './data/conten
 const themes=['dark','light','neural','matrix','times']
 
 function Globe({activeSkill,setActiveSkill}){
-  const group=useRef();
-  useFrame((_,delta)=>{ if(group.current) group.current.rotation.y += delta*0.08 })
-  const points=useMemo(()=>skills.map((s,i)=>{const phi=Math.acos(-1+(2*i+1)/skills.length); const theta=Math.sqrt(skills.length*Math.PI)*phi; return {x:2.25*Math.cos(theta)*Math.sin(phi),y:2.25*Math.cos(phi),z:2.25*Math.sin(theta)*Math.sin(phi),...s}}),[])
-  return <group ref={group}>
-    <mesh><sphereGeometry args={[2.2,32,32]}/><meshBasicMaterial color="#0b1730" wireframe transparent opacity={0.28}/></mesh>
-    <mesh><sphereGeometry args={[2.18,24,24]}/><meshBasicMaterial color="#22d3ee" transparent opacity={0.035}/></mesh>
-    {Array.from({length:8}).map((_,i)=><mesh key={'lat'+i} rotation={[Math.PI/2,0,0]} position={[0,(i-3.5)*0.52,0]}><torusGeometry args={[Math.sqrt(Math.max(0,2.2**2-((i-3.5)*0.52)**2)),0.008,8,64]}/><meshBasicMaterial color="#38bdf8" transparent opacity={0.2}/></mesh>)}
-    {Array.from({length:12}).map((_,i)=><mesh key={'lon'+i} rotation={[0,i*Math.PI/12,0]}><torusGeometry args={[2.2,0.006,8,64]}/><meshBasicMaterial color="#38bdf8" transparent opacity={0.15}/></mesh>)}
-    {points.map((p,i)=><group key={p.name} position={[p.x,p.y,p.z]}>
-      <mesh onPointerEnter={()=>setActiveSkill(p.name)} onPointerLeave={()=>setActiveSkill(null)}><sphereGeometry args={[activeSkill===p.name?0.13:0.08,16,16]}/><meshBasicMaterial color={activeSkill===p.name?'#f8fafc':'#22d3ee'}/></mesh>
-    </group>)}
-  </group>
+  const group = useRef();
+
+  useFrame((_, delta) => {
+    if(group.current){
+      group.current.rotation.y += delta * 0.08;
+    }
+  });
+
+  const points = useMemo(
+    () =>
+      skills.map((s, i) => {
+        const phi = Math.acos(
+          -1 + (2 * i + 1) / skills.length
+        );
+
+        const theta =
+          Math.sqrt(skills.length * Math.PI) * phi;
+
+        return {
+          x: 2.25 * Math.cos(theta) * Math.sin(phi),
+          y: 2.25 * Math.cos(phi),
+          z: 2.25 * Math.sin(theta) * Math.sin(phi),
+          ...s
+        };
+      }),
+    []
+  );
+
+  return (
+    <group ref={group}>
+
+      {/* Main wireframe globe */}
+      <mesh>
+        <sphereGeometry args={[2.2, 32, 32]} />
+        <meshBasicMaterial
+          color="#0b1730"
+          wireframe
+          transparent
+          opacity={0.28}
+        />
+      </mesh>
+
+      {/* Inner glow */}
+      <mesh>
+        <sphereGeometry args={[2.18, 24, 24]} />
+        <meshBasicMaterial
+          color="#22d3ee"
+          transparent
+          opacity={0.035}
+        />
+      </mesh>
+
+      {/* Latitude rings */}
+      {Array.from({length: 8}).map((_, i) => (
+        <mesh
+          key={`lat${i}`}
+          rotation={[Math.PI / 2, 0, 0]}
+          position={[0, (i - 3.5) * 0.52, 0]}
+        >
+          <torusGeometry
+            args={[
+              Math.sqrt(
+                Math.max(
+                  0,
+                  2.2 ** 2 -
+                    ((i - 3.5) * 0.52) ** 2
+                )
+              ),
+              0.008,
+              8,
+              64
+            ]}
+          />
+          <meshBasicMaterial
+            color="#38bdf8"
+            transparent
+            opacity={0.2}
+          />
+        </mesh>
+      ))}
+
+      {/* Longitude rings */}
+      {Array.from({length: 12}).map((_, i) => (
+        <mesh
+          key={`lon${i}`}
+          rotation={[0, i * Math.PI / 12, 0]}
+        >
+          <torusGeometry
+            args={[2.2, 0.006, 8, 64]}
+          />
+          <meshBasicMaterial
+            color="#38bdf8"
+            transparent
+            opacity={0.15}
+          />
+        </mesh>
+      ))}
+
+      {/* Skill icons */}
+      {points.map((p) => (
+        <group
+          key={p.name}
+          position={[p.x, p.y, p.z]}
+        >
+          <Html
+            center
+            distanceFactor={5}
+            style={{
+              pointerEvents: "auto"
+            }}
+          >
+            <button
+              className={`skill-orbit-icon ${
+                activeSkill === p.name ? "active" : ""
+              }`}
+              onClick={() => setActiveSkill(p.name)}
+              aria-label={`Show ${p.name} details`}
+            >
+              <img
+                src={new URL(p.icon, new URL(import.meta.env.BASE_URL, window.location.origin)).href}
+                alt={p.name}
+              />
+            </button>
+          </Html>
+        </group>
+      ))}
+
+    </group>
+  );
 }
 
 function ThemePicker({theme,setTheme}){const [open,setOpen]=useState(false); return <div className="theme-picker"><button className="theme-trigger" onClick={()=>setOpen(!open)}>◐ <span>{theme.toUpperCase()}</span><ChevronDown size={15}/></button><AnimatePresence>{open&&<motion.div initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} className="theme-menu">{themes.map(t=><button key={t} className={theme===t?'active':''} onClick={()=>{setTheme(t);setOpen(false)}}><span className={'theme-dot '+t}/>{t.toUpperCase()}</button>)}</motion.div>}</AnimatePresence></div>}
@@ -55,7 +172,141 @@ function Home(){return <section id="home" className="section hero"><div classNam
 
 function About(){return <section id="about" className="section"><SectionHeading eyebrow="01 / THE PERSON BEHIND THE MAP" title="Beyond the map."/><div className="about-layout"><div className="about-story"><p className="lead">I am an MSc Geoinformatics student and BA (Hons) Geography graduate, passionate about using GIS, remote sensing and spatial data analysis to solve real-world environmental challenges.</p><p>My goal is to apply geospatial technologies for climate change research, sustainable planning and data-driven decision-making.</p><div className="identity-grid"><div><span>FOCUS</span><b>GIS + Remote Sensing</b></div><div><span>APPROACH</span><b>Maps → Data → Insight</b></div><div><span>CURRENTLY</span><b>MSc Geoinformatics</b></div><div><span>BASE</span><b>Pune, Maharashtra</b></div></div></div><div className="about-card"><div className="card-top"><span>GEO ID / 2026</span><Compass size={20}/></div><div className="route"><div>GEOGRAPHY</div><i/> <div>GEOINFORMATICS</div><i/> <div>GIS</div><i/> <div>REMOTE SENSING</div><i/> <div>ENVIRONMENTAL APPLICATIONS</div></div><div className="education-list">{education.map(e=><div className="edu" key={e.degree}><div><span>{e.period}</span><h3>{e.degree}</h3><p>{e.institute}</p></div><span className="edu-tag">EDUCATION</span></div>)}</div></div></div></section>}
 
-function Skills(){const [active,setActive]=useState(null); return <section id="skills" className="section skills-section"><SectionHeading eyebrow="02 / TOOLKIT" title="My skills, in orbit."/><div className="skills-layout"><div className="globe-wrap"><Canvas camera={{position:[0,0,6.8],fov:45}}><ambientLight intensity={1}/><Stars radius={10} depth={8} count={900} factor={1.4} fade/><Globe activeSkill={active} setActiveSkill={setActive}/><OrbitControls enableZoom={false} enablePan={false} autoRotate={false}/></Canvas><div className="globe-label">DRAG TO EXPLORE</div></div><div className="skill-info"><div className="skill-intro"><span className="eyebrow">INTERACTIVE TOOLKIT</span><h3>{active||'Hover a node'}</h3><p>{active?skills.find(s=>s.name===active)?.desc:'The globe maps the tools I use across spatial analysis, programming and geospatial workflows.'}</p></div><div className="skill-chips">{skills.map(s=><button key={s.name} className={active===s.name?'selected':''} onMouseEnter={()=>setActive(s.name)} onMouseLeave={()=>setActive(null)} onClick={()=>setActive(s.name)}><span>{s.symbol}</span>{s.name}</button>)}</div><div className="skill-categories"><span><Layers3/> GEOSPATIAL</span><span><Satellite/> REMOTE SENSING</span><span><Code2/> PROGRAMMING</span><span><Database/> DATA</span></div></div></div></section>}
+function Skills(){
+  const [active, setActive] = useState(null);
+
+  return (
+    <section
+      id="skills"
+      className="section skills-section"
+    >
+
+      <SectionHeading
+        eyebrow="02 / TOOLKIT"
+        title="My skills, in orbit."
+      />
+
+      <div className="skills-layout">
+
+        {/* LEFT: 3D SKILL GLOBE */}
+        <div className="globe-wrap">
+
+          <Canvas
+            camera={{
+              position: [0, 0, 6.8],
+              fov: 45
+            }}
+          >
+
+            <ambientLight intensity={1} />
+
+            <Stars
+              radius={10}
+              depth={8}
+              count={900}
+              factor={1.4}
+              fade
+            />
+
+            <Globe
+              activeSkill={active}
+              setActiveSkill={setActive}
+            />
+
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              autoRotate={false}
+            />
+
+          </Canvas>
+
+          <div className="globe-label">
+            DRAG TO EXPLORE
+          </div>
+
+        </div>
+
+        {/* RIGHT: SKILL INFORMATION */}
+        <div className="skill-info">
+
+          <div className="skill-intro">
+
+            <span className="eyebrow">
+              INTERACTIVE TOOLKIT
+            </span>
+
+            <h3>
+              {active || "Click a skill"}
+            </h3>
+
+            <p>
+              {active
+                ? skills.find(
+                    s => s.name === active
+                  )?.desc
+                : "Click any skill icon on the globe to explore how I use it across spatial analysis, programming and geospatial workflows."}
+            </p>
+
+          </div>
+
+          {/* SKILL BUTTONS */}
+          <div className="skill-chips">
+
+            {skills.map(s => (
+              <button
+                key={s.name}
+                className={
+                  active === s.name
+                    ? "selected"
+                    : ""
+                }
+                onClick={() =>
+                  setActive(s.name)
+                }
+              >
+                <span>
+                  {s.symbol}
+                </span>
+
+                {s.name}
+              </button>
+            ))}
+
+          </div>
+
+          {/* SKILL CATEGORIES */}
+          <div className="skill-categories">
+
+            <span>
+              <Layers3 />
+              GEOSPATIAL
+            </span>
+
+            <span>
+              <Satellite />
+              REMOTE SENSING
+            </span>
+
+            <span>
+              <Code2 />
+              PROGRAMMING
+            </span>
+
+            <span>
+              <Database />
+              DATA
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  );
+}
 
 function Experiences(){return <section id="experiences" className="section"><SectionHeading eyebrow="03 / EXPERIENCE" title="Where I learned by doing."/><div className="timeline">{experiences.map((e,i)=><motion.article key={e.org} className="experience-row" initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} transition={{delay:i*.08}}><div className="time-col"><span>0{i+1}</span><b>{e.date}</b></div><div className="experience-card"><div className="experience-visual"><ImagePlaceholder label={e.imageLabel}/><div className="visual-stamp">{e.type}</div></div><div className="experience-copy"><div className="eyebrow">{e.type}</div><h3>{e.role}</h3><h4>{e.org}</h4><p>{e.summary}</p><ul>{e.points.map(p=><li key={p}>{p}</li>)}</ul>{e.proof&&<a className="text-link" href={e.proof} target="_blank">View completion letter <ExternalLink size={14}/></a>}</div></div></motion.article>)}</div></section>}
 
