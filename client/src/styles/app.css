@@ -202,3 +202,31 @@ canvas.interactive-geo-background {
   position: relative;
   z-index: 2;
 }
+
+.signature-brand {
+  font-family: "Segoe Script", "Brush Script MT", cursive;
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.focus-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.25;
+}
+
+.focus-note span {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  opacity: 0.55;
+}
+
+.focus-note strong {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
