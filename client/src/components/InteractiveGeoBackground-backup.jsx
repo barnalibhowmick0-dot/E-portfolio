@@ -1,23 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function InteractiveGeoBackground() {
-    const [theme, setTheme] = useState(
-    document.documentElement.dataset.theme || "dark"
-  );
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setTheme(document.documentElement.dataset.theme || "dark");
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"]
-    });
-
-    return () => observer.disconnect();
-  }, []);
-  
   const canvasRef = useRef(null);
 
   useEffect(() => {

@@ -1,14 +1,84 @@
-export const skills=[
- {name:'Python',symbol:'Py',desc:'Spatial analysis, automation and geospatial workflows.'},
- {name:'SQL',symbol:'SQL',desc:'Working with structured data and spatially oriented queries.'},
- {name:'PostgreSQL',symbol:'PG',desc:'Relational data workflows and a foundation for spatial databases.'},
- {name:'ArcGIS',symbol:'AG',desc:'GIS analysis, cartography, visualization and StoryMap workflows.'},
- {name:'QGIS',symbol:'QG',desc:'Open-source GIS, spatial analysis and map production.'},
- {name:'TerrSet',symbol:'TS',desc:'Geospatial and environmental modelling workflows.'},
- {name:'Agisoft',symbol:'AS',desc:'Photogrammetry-oriented processing and 3D geospatial workflows.'},
- {name:'Microsoft',symbol:'MS',desc:'Productivity, documentation and data-oriented workflows.'},
- {name:'GitHub',symbol:'GH',desc:'Version control, project hosting and portfolio development.'}
-]
+export const skills = [
+  {
+    name: "Python",
+    icon: "images/skills/python.svg",
+    desc: "Used for geospatial data analysis, automation, spatial processing and data visualization.",
+    tools: ["GeoPandas", "Shapely", "NumPy", "Pandas", "Matplotlib"],
+    application: "Geospatial Analysis · Remote Sensing · Automation"
+  },
+
+  {
+    name: "SQL",
+    icon: "images/skills/sql.svg",
+    desc: "Used to query, filter and analyse structured spatial and non-spatial datasets.",
+    tools: ["SQL Queries", "Joins", "Filtering", "Aggregation"],
+    application: "Database Analysis · Spatial Data"
+  },
+
+  {
+    name: "PostgreSQL",
+    icon: "images/skills/postgresql.svg",
+    desc: "Used for managing structured geographic data and performing database-based spatial analysis.",
+    tools: ["PostgreSQL", "PostGIS", "Spatial Queries"],
+    application: "Spatial Databases · GIS"
+  },
+
+  {
+    name: "ArcGIS",
+    icon: "images/skills/arcgis.svg",
+    desc: "Used for cartography, spatial analysis, geoprocessing and interactive geographic visualization.",
+    tools: ["ArcGIS Pro", "StoryMaps", "Spatial Analysis"],
+    application: "GIS · Cartography · Web Mapping"
+  },
+
+  {
+    name: "QGIS",
+    icon: "images/skills/qgis.svg",
+    desc: "Used for GIS analysis, thematic mapping, spatial processing and geospatial visualization.",
+    tools: ["QGIS", "Processing", "Raster Analysis", "Vector Analysis"],
+    application: "GIS · Spatial Analysis · Mapping"
+  },
+
+  {
+    name: "TerrSet",
+    icon: "images/skills/terrset.svg",
+    desc: "Used for environmental modelling, land-change analysis and geospatial decision support.",
+    tools: ["TerrSet", "Land Change Modeler", "Spatial Analysis"],
+    application: "Environmental Modelling · Land Change"
+  },
+
+  {
+    name: "Agisoft",
+    icon: "images/skills/agisoft.svg",
+    desc: "Used for photogrammetric processing and generation of 3D spatial products from imagery.",
+    tools: ["Agisoft Metashape", "Photogrammetry", "3D Reconstruction"],
+    application: "Photogrammetry · 3D Mapping"
+  },
+
+  {
+    name: "Microsoft",
+    icon: "images/skills/microsoft.svg",
+    desc: "Used for documentation, presentations, spreadsheets and organizing analytical workflows.",
+    tools: ["Word", "Excel", "PowerPoint"],
+    application: "Documentation · Data Handling · Presentation"
+  },
+
+  {
+    name: "GitHub",
+    icon: "images/skills/github.svg",
+    desc: "Used for version control, project documentation, portfolio development and publishing geospatial work.",
+    tools: ["Git", "GitHub", "GitHub Pages"],
+    application: "Version Control · Portfolio · Deployment"
+  },
+
+  {
+    name: "Jupyter",
+    icon: "images/skills/jupyter.svg",
+    desc: "Used for interactive Python-based analysis, experimentation, visualization and reproducible workflows.",
+    tools: ["Jupyter Notebook", "Python", "Data Analysis"],
+    application: "Programming · Analysis · Documentation"
+  }
+];
 export const education=[
  {degree:'Master of Science · Geoinformatics',institute:'Bharati Vidyapeeth (Deemed to be University), Institute of Environment Education and Research',period:'2025—2027'},
  {degree:'BA (Hons.) · Geography',institute:'Shyama Prasad Mukherji College, University of Delhi',period:'2022—2025'}
