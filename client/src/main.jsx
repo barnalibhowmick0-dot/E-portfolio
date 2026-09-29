@@ -3,6 +3,14 @@ import {createRoot} from 'react-dom/client'
 import {Canvas, useFrame} from '@react-three/fiber'
 import {OrbitControls, Stars, Line, Html} from '@react-three/drei'
 import {motion, AnimatePresence} from 'framer-motion'
+import {
+  Map as MapLibreMap,
+  Marker,
+  Popup,
+  NavigationControl
+} from 'maplibre-gl'
+
+import 'maplibre-gl/dist/maplibre-gl.css'
 import {ArrowUpRight, ChevronDown, Download, Github, Linkedin, Mail, MapPin, Menu, X, ExternalLink, FileText, Layers3, Satellite, Database, Code2, Send, Sparkles, Compass, BriefcaseBusiness, BookOpen, Terminal, MousePointer2} from 'lucide-react'
 
 import InteractiveGeoBackground from "./components/InteractiveGeoBackground";
@@ -10,6 +18,9 @@ import './styles/app.css'
 import {experiences, projects, fieldwork, skills, education} from './data/content'
 
 const themes=['dark','light','neural','matrix','times']
+// GitHub Pages-safe asset paths
+const assetUrl = (path) =>
+  `${import.meta.env.BASE_URL}${String(path).replace(/^\/+/, '')}`;
 
 function Globe({activeSkill,setActiveSkill}){
   const group = useRef();
@@ -131,7 +142,7 @@ function Globe({activeSkill,setActiveSkill}){
               aria-label={`Show ${p.name} details`}
             >
               <img
-                src={new URL(p.icon, new URL(import.meta.env.BASE_URL, window.location.origin)).href}
+                src={assetUrl(p.icon)}
                 alt={p.name}
               />
             </button>
@@ -179,7 +190,324 @@ function Home(){return <section id="home" className="section hero"><div classNam
   </div>
 </div><div className="orbit-card"><span>FROM PIXELS TO PATTERNS</span><strong>Earth Observation → Spatial Insight</strong></div></div><div className="scroll-cue">SCROLL TO EXPLORE <ChevronDown size={15}/></div></section>}
 
-function About(){return <section id="about" className="section"><SectionHeading eyebrow="01 / THE PERSON BEHIND THE MAP" title="Beyond the map."/><div className="about-layout"><div className="about-story"><p className="lead">I am an MSc Geoinformatics student and BA (Hons) Geography graduate, passionate about using GIS, remote sensing and spatial data analysis to solve real-world environmental challenges.</p><p>My goal is to apply geospatial technologies for climate change research, sustainable planning and data-driven decision-making.</p><div className="identity-grid"><div><span>FOCUS</span><b>GIS + Remote Sensing</b></div><div><span>APPROACH</span><b>Maps → Data → Insight</b></div><div><span>CURRENTLY</span><b>MSc Geoinformatics</b></div><div><span>BASE</span><b>Pune, Maharashtra</b></div></div></div><div className="about-card"><div className="card-top"><span>GEO ID / 2026</span><Compass size={20}/></div><div className="route"><div>GEOGRAPHY</div><i/> <div>GEOINFORMATICS</div><i/> <div>GIS</div><i/> <div>REMOTE SENSING</div><i/> <div>ENVIRONMENTAL APPLICATIONS</div></div><div className="education-list">{education.map(e=><div className="edu" key={e.degree}><div><span>{e.period}</span><h3>{e.degree}</h3><p>{e.institute}</p></div><span className="edu-tag">EDUCATION</span></div>)}</div></div></div></section>}
+function latLonToVector3(lat, lon, radius = 1.82) {
+  const latRad = lat * Math.PI / 180;
+  const lonRad = lon * Math.PI / 180;
+
+  return [
+    radius * Math.cos(latRad) * Math.cos(lonRad),
+    radius * Math.sin(latRad),
+    radius * Math.cos(latRad) * Math.sin(lonRad),
+  ];
+}
+
+function educationArc(start, end, lift = 0.12, steps = 32) {
+  const points = [];
+
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+
+    const x = start[0] * (1 - t) + end[0] * t;
+    const y = start[1] * (1 - t) + end[1] * t;
+    const z = start[2] * (1 - t) + end[2] * t;
+
+    const length = Math.sqrt(x * x + y * y + z * z);
+
+    const scale =
+      (1.82 + lift * Math.sin(Math.PI * t)) / length;
+
+    points.push([
+      x * scale,
+      y * scale,
+      z * scale
+    ]);
+  }
+
+  return points;
+}
+
+const educationLocations = [
+  {
+    id: "graduation",
+    short: "GRADUATION",
+    degree: "BA (Hons.) · Geography",
+    place:
+      "Shyama Prasad Mukherji College, University of Delhi",
+    city: "New Delhi",
+    period: "2022—2025",
+
+    lat: 28.672864,
+    lon: 77.127531,
+  },
+
+  {
+    id: "masters",
+    short: "MASTER'S",
+    degree: "MSc · Geoinformatics",
+    place:
+      "Bharati Vidyapeeth Institute of Environment Education and Research",
+    city: "Pune",
+    period: "2025—2027",
+
+    lat: 18.5204,
+    lon: 73.8567,
+  },
+];
+
+function EducationGlobe({ selected, setSelected }) {
+  const group = useRef();
+
+  useFrame((_, delta) => {
+    if (group.current) {
+      group.current.rotation.y += delta * 0.035;
+    }
+  });
+
+  const points = useMemo(
+    () =>
+      educationLocations.map((location) => ({
+        ...location,
+        position: latLonToVector3(
+          location.lat,
+          location.lon
+        ),
+      })),
+    []
+  );
+
+  const arc = useMemo(
+    () =>
+      educationArc(
+        points[0].position,
+        points[1].position
+      ),
+    [points]
+  );
+
+  return (
+    <group
+      ref={group}
+      rotation={[0, -0.35, 0]}
+    >
+
+      {/* Globe */}
+      <mesh>
+        <sphereGeometry args={[1.78, 28, 20]} />
+
+        <meshBasicMaterial
+          color="#0b1730"
+          wireframe
+          transparent
+          opacity={0.42}
+        />
+      </mesh>
+
+      {/* Very subtle globe interior */}
+      <mesh>
+        <sphereGeometry args={[1.77, 24, 16]} />
+
+        <meshBasicMaterial
+          color="#22d3ee"
+          transparent
+          opacity={0.025}
+        />
+      </mesh>
+
+      {/* Delhi → Pune connection */}
+      <Line
+        points={arc}
+        color="#22d3ee"
+        transparent
+        opacity={0.8}
+        lineWidth={1.2}
+      />
+
+      {/* Location markers */}
+      {points.map((location) => (
+        <group
+          key={location.id}
+          position={location.position}
+        >
+
+          {/* Main marker */}
+          <mesh
+            scale={
+              selected === location.id
+                ? 1.18
+                : 1
+            }
+            onClick={(event) => {
+              event.stopPropagation();
+              setSelected(location.id);
+            }}
+          >
+            <sphereGeometry
+              args={[0.075, 16, 16]}
+            />
+
+            <meshBasicMaterial
+              color="#22d3ee"
+            />
+          </mesh>
+
+          {/* Marker glow */}
+          <mesh>
+            <sphereGeometry
+              args={[0.13, 16, 16]}
+            />
+
+            <meshBasicMaterial
+              color="#22d3ee"
+              transparent
+              opacity={
+                selected === location.id
+                  ? 0.18
+                  : 0.08
+              }
+            />
+          </mesh>
+
+          {/* City label */}
+          <Html
+            position={[0, 0.17, 0]}
+            center
+            distanceFactor={5}
+            style={{
+              pointerEvents: "none"
+            }}
+          >
+            <span className="education-marker-label">
+              {location.city}
+            </span>
+          </Html>
+
+        </group>
+      ))}
+
+    </group>
+  );
+}
+
+function EducationMap() {
+  const [selected, setSelected] =
+    useState("masters");
+
+  const selectedLocation =
+    educationLocations.find(
+      (location) =>
+        location.id === selected
+    ) || educationLocations[1];
+
+  return (
+    <div className="education-map">
+
+      <div className="education-map-top">
+        <span>
+          EDUCATION / LOCATION
+        </span>
+
+        <span>
+          DELHI → PUNE
+        </span>
+      </div>
+
+      <div className="education-globe">
+
+        <Canvas
+          camera={{
+            position: [0, 0, 5.4],
+            fov: 42
+          }}
+          dpr={[1, 2]}
+        >
+
+          <ambientLight intensity={1} />
+
+          <EducationGlobe
+            selected={selected}
+            setSelected={setSelected}
+          />
+
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            enableDamping
+            dampingFactor={0.08}
+          />
+
+        </Canvas>
+
+        <div className="education-map-hint">
+          DRAG · SELECT A LOCATION
+        </div>
+
+      </div>
+
+      <div className="education-location-card">
+
+        <span>
+          {selectedLocation.short}
+        </span>
+
+        <strong>
+          {selectedLocation.city}
+        </strong>
+
+        <small>
+          {selectedLocation.degree}
+          {" · "}
+          {selectedLocation.period}
+        </small>
+
+      </div>
+
+      <div className="education-location-buttons">
+
+        {educationLocations.map(
+          (location) => (
+
+            <button
+              key={location.id}
+              type="button"
+              className={
+                selected === location.id
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setSelected(location.id)
+              }
+            >
+
+              <span>
+                {location.short}
+              </span>
+
+              <strong>
+                {location.city}
+              </strong>
+
+            </button>
+
+          )
+        )}
+
+      </div>
+
+    </div>
+  );
+}
+
+function About(){return <section id="about" className="section"><SectionHeading eyebrow="01 / THE PERSON BEHIND THE MAP" title="Beyond the map."/><div className="about-layout"><div className="about-story"><p className="lead">I am an MSc Geoinformatics student and BA (Hons) Geography graduate, passionate about using GIS, remote sensing and spatial data analysis to solve real-world environmental challenges.</p><p>My goal is to apply geospatial technologies for climate change research, sustainable planning and data-driven decision-making.</p><div className="identity-grid"><div><span>FOCUS</span><b>GIS + Remote Sensing</b></div><div><span>APPROACH</span><b>Maps → Data → Insight</b></div><div><span>CURRENTLY</span><b>MSc Geoinformatics</b></div><div><span>BASE</span><b>Pune, Maharashtra</b></div></div></div><div className="about-card">
+
+  <div className="card-top">
+    <span>GEO ID / 2026</span>
+    <Compass size={20}/>
+  </div>
+
+  <EducationMap />
+
+  <div className="education-list">{education.map(e=><div className="edu" key={e.degree}><div><span>{e.period}</span><h3>{e.degree}</h3><p>{e.institute}</p></div><span className="edu-tag">EDUCATION</span></div>)}</div></div></div></section>}
 
 function Skills(){
   const [active, setActive] = useState(null);
